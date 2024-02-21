@@ -2,7 +2,6 @@
   "name": "-youtube-data-aggregator",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,8 +9,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "google-auth-library": "^9.6.3",
+    "googleapis": "^133.0.0",
+    "nodemon": "^3.0.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.1",
+    "youtube-api": "^3.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",
