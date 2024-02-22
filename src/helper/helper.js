@@ -1,7 +1,10 @@
 const axios = require('axios');
 const YT_API_KEY = "AIzaSyDWR8umz87buINaMHeRsGXYpEwYZaeFDlg"
-
 var {google} = require('googleapis');
+
+const sample_channel_id = "UCHnyfMqiRRG1u-2MsSQLbXA"
+const sameple_upload_playlist_id = "UUHnyfMqiRRG1u-2MsSQLbXA"
+
 
 // Initialize YouTube service
 const youtube = google.youtube({
@@ -9,10 +12,12 @@ const youtube = google.youtube({
     auth: YT_API_KEY // Your API key
 });
 
+
+// alreadying working except the title
 async function getChannelInfo(handle){
   payload = {
         forHandle: handle,
-        part: 'statistics',
+        part: 'statistics,id',
     }
     try {
         const response = await youtube.channels.list(payload);
@@ -23,11 +28,9 @@ async function getChannelInfo(handle){
           viewCount: data.statistics.viewCount,
           subscriberCount: data.statistics.subscriberCount,
           videoCount: data.statistics.videoCount
-
-
         }
       
-        return  info
+        return info
 
     } catch (error) {
         console.error('Error fetching channel id:', error);
@@ -35,6 +38,73 @@ async function getChannelInfo(handle){
     }
 }
 
+async function getVideoStats(channelId){
+  payload = {
+    part: 'contentDetails, localizations, player, snippet, status',
+    channelId: channelId,
+    maxResults: 50,
+  }
+  try {
+    const response = await youtube.playlists.list(payload);
+    const data = response.data.items[0];
+
+
+
+  } catch (error) {
+      console.error('Error fetching channel id:', error);
+      return null;
+  }
+}
+
+async function getUploadsPlaylistId(channelId) {
+  try {
+      const response = await youtube.channels.list({
+          part: 'contentDetails',
+          id: channelId,
+      });
+
+      const uploadsPlaylistId = response.data.items[0].contentDetails.relatedPlaylists.uploads;
+      return uploadsPlaylistId;
+  } catch (error) {
+      console.error('Error fetching uploads playlist ID:', error);
+      throw error;
+  }
+}
+
+// Function to recursively fetch all videos from the uploads playlist
+async function getAllVideosFromPlaylist(playlistId, nextPageToken = '', videos = []) {
+  try {
+      const response = await youtube.playlistItems.list({
+          part: 'snippet',
+          playlistId: playlistId,
+          maxResults: 10,
+          pageToken: nextPageToken,
+      });
+
+      videos.push(...response.data.items);
+
+
+      return videos;
+  } catch (error) {
+      console.error('Error fetching videos:', error);
+      throw error;
+  }
+}
+
+async function getPlaylists(channelId) {
+  const payload = {
+      part: 'snippet,contentDetails',
+      channelId: channelId,
+      maxResults: 50,
+  };
+  try {
+      const response = await youtube.playlists.list(payload);
+      return response.data.items; // Return the playlists
+  } catch (error) {
+      console.error('Error fetching playlists:', error);
+      return null;
+  }
+}
 
 
 async function getIDfromHandle(handle){
@@ -46,7 +116,7 @@ async function getIDfromHandle(handle){
         const response = await youtube.channels.list(payload);
         const result = response.data.items[0].id;
 
-        console.log(result); 
+
         return result
 
     } catch (error) {
@@ -55,28 +125,6 @@ async function getIDfromHandle(handle){
     }
 }
 
-
-async function getUploadsPlaylistId(channelId) {
-  try {
-    const response = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
-      params: {
-        part: 'contentDetails',
-        id: channelId,
-        key: YT_API_KEY,
-      },
-    });
-
-    if (response.data.items.length > 0) {
-      return response.data.items[0].contentDetails.relatedPlaylists.uploads;
-    } else {
-      console.log('No uploads playlist found for the specified channel ID.');
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching uploads playlist ID:', error);
-    return null;
-  }
-}
 
 
 async function getRecentVideos(playlistId, maxResults=5) {
@@ -103,7 +151,58 @@ async function getRecentVideos(playlistId, maxResults=5) {
   }
 }
 
-getChannelInfo('veritasium').then(res => console.log(res));
 
 
-module.exports = {getChannelInfo}
+async function getVideofromChannelId(channelId = sample_channel_id) {
+  try {
+      const playlistId = await getUploadsPlaylistId(channelId);
+      if (!playlistId) {
+          console.log("No playlist ID found.");
+          return [];
+      }
+      const videos = await getAllVideosFromPlaylist(playlistId);
+
+      // Fetch metrics for each video and add them to the video data
+      const videosWithMetrics = await Promise.all(videos.map(async (item) => {
+        const statistics = await getVideoMetrics(item.snippet.resourceId.videoId);
+        return {
+          title: item.snippet.title,
+          videoId: item.snippet.resourceId.videoId,
+          thumbnailUrl: item.snippet.thumbnails.high.url,
+          statistics, // Add the statistics here
+        };
+      }));
+
+      return videosWithMetrics; // Returns the enriched video list
+  } catch (error) {
+      console.error('Error fetching videos from channel ID:', error);
+      return []; // Return an empty array or handle the error as needed
+  }
+}
+
+
+async function getVideoMetrics(videoId) {
+  try {
+    const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
+      params: {
+        part: 'statistics', // The 'statistics' part holds the engagement metrics
+        id: videoId, // The video ID for which you want to get the metrics
+        key: YT_API_KEY
+      }
+    });
+
+    // If the response contains items, return the statistics
+    if (response.data.items && response.data.items.length > 0) {
+      return response.data.items[0].statistics;
+    } else {
+      throw new Error('No statistics found for the given video ID.');
+    }
+  } catch (error) {
+    console.error('Error fetching video statistics:', error);
+    throw error; // Re-throw the error to be handled by the caller
+  }
+}
+
+
+
+module.exports = {getChannelInfo, getVideoStats, getVideofromChannelId}
