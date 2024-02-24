@@ -33,8 +33,8 @@ app.get('/api/playlist/:channelId', async (req, res) => {
       console.error('Error in route:', error);
       res.status(500).json({ error: 'Internal Server Error' });
   }
-  
 });
+
 
 
 const PORT = process.env.PORT || 3001;

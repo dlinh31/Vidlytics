@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import ChannelInfo from './components/ChannelInfo';
 import VideoCard from './components/VideoCard';
 
+
+
 import './App.css';
 
 function App() {
   const [handle, setHandle] = useState("");
   const [channelInfo, setChannelInfo] = useState(null);
   const [videos, setVideos] = useState([]);
-  const [sortMethod, setSortMethod] = useState('viewsDesc'); // Default sorting method
-  // This is a simplified version. You might need to adjust based on where you're setting videos.
+  const [sortMethod, setSortMethod] = useState('viewsDesc'); 
+ 
+  
+  
+
 
   useEffect(() => {
     const sortedVideos = sortVideos([...videos], sortMethod);
@@ -18,11 +23,6 @@ function App() {
 
 
 
-
-
-
-  
-  // Separate API call functions
   const fetchChannelInfo = async (channelHandle) => {
     try {
       const response = await fetch(`http://localhost:3001/api/channel/${channelHandle}`);
@@ -62,13 +62,16 @@ const fetchVideos = async (channelId) => {
     const data = await response.json();
     const sortedVideos = sortVideos(data, sortMethod)
 
-
     setVideos(sortedVideos); // Just set the fetched data here
   } catch (error) {
     console.error('Fetch error:', error);
     setVideos([]); // Clear on error
   }
 };
+
+
+
+
 
   // Event handler for the search button
   const handleSearch = async () => {
@@ -86,6 +89,12 @@ const fetchVideos = async (channelId) => {
   const handleInputChange = (event) => {
     setHandle(event.target.value);
   };
+
+  const handleNextPage = () => {
+    setCurrentPageToken(nextPageToken); // Update the current page token
+    fetchVideos(channelInfo.id, nextPageToken); // Fetch videos with the next page token
+  };
+  
 
   return (
     <div className="space-y-4 mx-8">

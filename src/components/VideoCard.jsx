@@ -1,4 +1,6 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faThumbsUp, faComment } from '@fortawesome/free-solid-svg-icons';
 
 function VideoCard({ info }) {
     const { videoId, title, thumbnailUrl, statistics } = info;
@@ -13,16 +15,11 @@ function VideoCard({ info }) {
             <img className="w-full" src={thumbnailUrl} alt={title} />
             <div className="px-6 py-4 flex-1">
                 <div className="font-bold text-xl mb-2">{title}</div>
-                {/* Display formatted statistics */}
-                <p className="text-gray-700 text-base">
-                    Views: {formatNumber(statistics.viewCount)}
-                </p>
-                <p className="text-gray-700 text-base">
-                    Likes: {formatNumber(statistics.likeCount)}
-                </p>
-                <p className="text-gray-700 text-base mb-4">
-                    Comments: {formatNumber(statistics.commentCount)}
-                </p>
+                <div className="text-gray-700 text-base">
+                    <div><FontAwesomeIcon icon={faEye} /> {formatNumber(statistics.viewCount)}</div>
+                    <div><FontAwesomeIcon icon={faThumbsUp} /> {formatNumber(statistics.likeCount)}</div>
+                    <div><FontAwesomeIcon icon={faComment} /> {formatNumber(statistics.commentCount)}</div>
+                </div>
             </div>
             <div className="px-6 py-4">
                 <a href={`https://www.youtube.com/watch?v=${videoId}`}
