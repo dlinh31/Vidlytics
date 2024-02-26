@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import './App.css';
 import ChannelInfo from './components/ChannelInfo';
 import VideoCard from './components/VideoCard';
+import ChannelCard from './components/ChannelCard';
 
-
-
-import './App.css';
 
 function App() {
   const [handle, setHandle] = useState("");
@@ -12,31 +11,13 @@ function App() {
   const [videos, setVideos] = useState([]);
   const [sortMethod, setSortMethod] = useState('dateNewest'); 
   const [errorMessage, setErrorMessage] = useState("");
-
-  
-  
-
+  const [batch, setBatch] = useState([]); // State to hold batch of usernames
+  const [batchResults, setBatchResults] = useState([]);
 
   useEffect(() => {
     const sortedVideos = sortVideos([...videos], sortMethod);
     setVideos(sortedVideos);
   }, [sortMethod]); // React to changes in fetched videos or sort method
-
-
-
-  // const fetchChannelInfo = async (channelHandle) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3001/api/channel/${channelHandle}`);
-  //     if (!response.ok) {
-  //       throw new Error('Channel data could not be fetched');
-  //     }
-  //     const data = await response.json();
-  //     return data;
-  //   } catch (error) {
-  //     console.error('Fetch error:', error);
-  //     return null; // Make sure to return null here to trigger the error message
-  //   }
-  // };
 
 
   const fetchChannelInfo = async (channelHandle) => {
@@ -91,34 +72,56 @@ const fetchVideos = async (channelId) => {
     const response = await fetch(`http://localhost:3001/api/playlist/${channelId}`);
     if (!response.ok) throw new Error('Video data could not be fetched');
     const data = await response.json();
-    const sortedVideos = sortVideos(data, sortMethod)
-
-    setVideos(sortedVideos); // Just set the fetched data here
+    return sortVideos(data, 'dateNewest'); // Assuming you want to sort by date as default
   } catch (error) {
     console.error('Fetch error:', error);
-    setVideos([]); // Clear on error
+    throw error; // Rethrow to catch in the batch processing
+  }
+};
+
+const addToBatch = () => {
+  if (handle.trim() && !batch.includes(handle)) {
+    setBatch([...batch, handle]);
+    setHandle(""); // Reset the input field
   }
 };
 
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)); //delay to respect API's rate limit
+
+const processBatch = async () => {
+  setVideos([]);
+  setChannelInfo(null);
+  const results = []; // Array to store results from each username's data fetch
+  for (const username of batch) {
+    try {
+      const { success, data } = await fetchChannelInfo(username);
+      if (success) {
+        // Assume fetchVideos is modified to return the videos directly
+        const videos = await fetchVideos(data.id);
+        results.push({ username, data, videos });
+      } else {
+        results.push({ username, error: "Channel with given username doesn't exist" });
+      }
+      
+      // Add a delay to avoid rate limiting, adjust time as needed
+      await sleep(1000); 
 
 
+    } catch (error) {
+      console.error('Error processing batch for username:', username, error);
+      results.push({ username, error: error.message });
+    }
+  }
 
-  // Event handler for the search button
-  // const handleSearch = async () => {
-  //   if (handle.trim()) {
-  //     const channelData = await fetchChannelInfo(handle);
-  //     if (channelData) {
-  //       setChannelInfo(channelData);
-  //       setErrorMessage(""); // Clear any existing error message
-  //       await fetchVideos(channelData.id);
-  //     } else {
-  //       setErrorMessage("Channel with given username doesn't exist"); // Set the error message
-  //       setChannelInfo(null); // Clear any existing channel info
-  //       setVideos([]); // Clear any existing videos
-  //     }
-  //   }
-  // };
+  // Do something with the results here
+  // For example, you could set them to a state to display in the UI
+  setBatchResults(results);
+  // Clear the batch if you want to start fresh next time
+  setBatch([]);
+};
+
+
   
   const handleSearch = async () => {
     if (handle.trim()) {
@@ -126,7 +129,8 @@ const fetchVideos = async (channelId) => {
       if (success) {
         setChannelInfo(data);
         setErrorMessage(""); // Clear any existing error message
-        await fetchVideos(data.id);
+        const videosFromSearch = await fetchVideos(data.id);
+        setVideos(videosFromSearch); // Set the fetched videos here
       } else {
         setErrorMessage("Channel with given username doesn't exist"); // Set the error message
         setChannelInfo(null); // Ensure to clear any existing channel info
@@ -141,11 +145,6 @@ const fetchVideos = async (channelId) => {
     setHandle(event.target.value);
   };
 
-  const handleNextPage = () => {
-    setCurrentPageToken(nextPageToken); // Update the current page token
-    fetchVideos(channelInfo.id, nextPageToken); // Fetch videos with the next page token
-  };
-  
 
   return (
     <div className="space-y-4 mx-8">
@@ -153,15 +152,29 @@ const fetchVideos = async (channelId) => {
         type="text"
         value={handle}
         onChange={handleInputChange}
-        placeholder="Enter YouTube channel or username"
-        className="p-2 border rounded w-80 shadow-sm focus:outline-none focus:border-blue-500"
+        placeholder="Enter YouTube channel username e.g. @MrBeast"
+        className="p-2 w-96 border rounded shadow-sm focus:outline-none focus:border-blue-500"
       />
       <button
         onClick={handleSearch}
-        className="mx-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors"
+        className="w-36 h-10 mx-2 ml-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors"
       >
         Search
       </button>
+      <button onClick={addToBatch} className=" w-36 h-10 mx-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
+        Add to batch
+      </button>
+      <button onClick={processBatch} className="w-36 h-10 mx-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+        Search Batch
+      </button>
+      {/* Display the batch of usernames */}
+      <div>
+        {batch.map((username, index) => (
+          <ChannelCard key={index} username={username} />
+        ))}
+      </div>
+
+
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
       {channelInfo && !errorMessage && (<ChannelInfo info={channelInfo} />)}
@@ -191,6 +204,19 @@ const fetchVideos = async (channelId) => {
           <VideoCard key={video.id} info={video} />
         ))}
       </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {batchResults.map((result, index) => (
+        <div key={index}>
+          <ChannelCard username={result.username} info={result.data} />
+          {result.videos && result.videos.map((video, idx) => (
+            <VideoCard key={idx} info={video} />
+          ))}
+          {result.error && <p className="error-message">{result.error}</p>}
+        </div>
+      ))}
+    </div>
+
+
     </div>
   );
 }
