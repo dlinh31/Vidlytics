@@ -12,13 +12,13 @@ function App() {
   const [videos, setVideos] = useState([]);
   const [sortMethod, setSortMethod] = useState('dateNewest'); 
   const [errorMessage, setErrorMessage] = useState("");
-  const [batch, setBatch] = useState([]); // State to hold batch of usernames
+  const [batch, setBatch] = useState([]);
   const [batchResults, setBatchResults] = useState([]);
 
   useEffect(() => {
     const sortedVideos = sortVideos([...videos], sortMethod);
     setVideos(sortedVideos);
-  }, [sortMethod]); // React to changes in fetched videos or sort method
+  }, [sortMethod]); 
 
 
   const fetchChannelInfo = async (channelHandle) => {
@@ -31,20 +31,18 @@ function App() {
         if (data && data.subscriberCount > 0) {
           return { success: true, data };
         } else {
-          // If the data is not valid, return success: false.
           return { success: false };
         }
       }
-      // If the response is not OK, treat it as a failure to find the channel.
       return { success: false };
     } catch (error) {
       console.error('Fetch error:', error);
-      return { success: false }; // Treat errors as failure to find the channel
+      return { success: false };
     }
   };
   
   
-
+  // video sorts method based on different metrics
   function sortVideos(videos, method) {
     return [...videos].sort((a, b) => {
       switch (method) {
@@ -68,43 +66,41 @@ function App() {
 
 
 
-const fetchVideos = async (channelId) => {
-  try {
-    const response = await fetch(`http://localhost:3001/api/playlist/${channelId}`);
-    if (!response.ok) throw new Error('Video data could not be fetched');
-    const data = await response.json();
-    return sortVideos(data, 'dateNewest'); // Assuming you want to sort by date as default
-  } catch (error) {
-    console.error('Fetch error:', error);
-    throw error; // Rethrow to catch in the batch processing
-  }
-};
+  const fetchVideos = async (channelId) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/playlist/${channelId}`);
+      if (!response.ok) throw new Error('Video data could not be fetched');
+      const data = await response.json();
+      return sortVideos(data, 'dateNewest');
+    } catch (error) {
+      console.error('Fetch error:', error);
+      throw error; // Rethrow to catch in the batch processing
+    }
+  };
 
-const addToBatch = () => {
-  if (handle.trim() && !batch.includes(handle)) {
-    setBatch([...batch, handle]);
-    setHandle(""); // Reset the input field
-  }
-};
+  const addToBatch = () => {
+    if (handle.trim() && !batch.includes(handle)) {
+      setBatch([...batch, handle]);
+      setHandle(""); // Reset the input field
+    }
+  };
 
 
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)); //delay to respect API's rate limit
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)); 
 
 const processBatch = async () => {
   setVideos([]);
   setChannelInfo(null);
-  const results = []; // Array to store results from each username's data fetch
+  const results = []; 
   for (const username of batch) {
     try {
       const { success, data } = await fetchChannelInfo(username);
       if (success) {
-        // Assume fetchVideos is modified to return the videos directly
         const videos = await fetchVideos(data.id);
         results.push({ username, data, videos });
       } else {
         results.push({ username, error: "Channel with given username doesn't exist" });
       }
-      
       // Add a delay to avoid rate limiting, adjust time as needed
       await sleep(1000); 
 
@@ -114,9 +110,6 @@ const processBatch = async () => {
       results.push({ username, error: error.message });
     }
   }
-
-  // Do something with the results here
-  // For example, you could set them to a state to display in the UI
   setBatchResults(results);
   // Clear the batch if you want to start fresh next time
   setBatch([]);
@@ -150,38 +143,46 @@ const processBatch = async () => {
   return (
     <div className="space-y-4 mx-8">
 
-    <AppHeader /> {/* This will render the header */}
+    <AppHeader /> 
 
-      <input
-        type="text"
-        value={handle}
-        onChange={handleInputChange}
-        placeholder="Enter YouTube channel username e.g. @MrBeast"
-        className="p-2 w-96 border rounded shadow-sm focus:outline-none focus:border-blue-500"
-      />
+    <div className="flex flex-col items-center justify-center space-y-2">
+    <input
+      type="text"
+      value={handle}
+      onChange={handleInputChange}
+      placeholder="Enter YouTube channel username e.g. @MrBeast"
+      className="p-2 w-96 border rounded shadow-sm focus:outline-none focus:border-blue-500"
+    />
+    <div className="flex space-x-4 justify-center">
       <button
         onClick={handleSearch}
-        className="w-36 h-10 mx-2 ml-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors"
+        className="w-36 h-10 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition-colors"
       >
         Search
       </button>
-      <button onClick={addToBatch} className=" w-36 h-10 mx-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
+      <button onClick={addToBatch} className="w-36 h-10 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">
         Add to batch
       </button>
-      <button onClick={processBatch} className="w-36 h-10 mx-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+      <button onClick={processBatch} className="w-36 h-10 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
         Search Batch
       </button>
-      {/* Display the batch of usernames */}
+    </div>
+  </div>
+      {/* Display all Youtube channels username */}
       <div>
         {batch.map((username, index) => (
           <ChannelCard key={index} username={username} />
         ))}
       </div>
 
-
+      {/* error message  */}
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
+      {/* channel info box  */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
       {channelInfo && !errorMessage && (<ChannelInfo info={channelInfo} />)}
+
+      {/* Videos from single channel & sort */}
       {videos.length > 0 && (
         <div className="flex items-center">
           <p className="mr-2">Sort by:</p>
@@ -200,14 +201,14 @@ const processBatch = async () => {
         </div>
       )}
     </div>
-
       
-
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {videos.length > 0 && videos.map(video => (
           <VideoCard key={video.id} info={video} />
         ))}
       </div>
+
+      {/* Videos from batch processing  */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {batchResults.map((result, index) => (
         <div key={index}>
@@ -219,7 +220,6 @@ const processBatch = async () => {
         </div>
       ))}
     </div>
-
 
     </div>
   );

@@ -9,8 +9,8 @@ var {google} = require('googleapis');
 
 
 
-const sample_channel_id = "UCHnyfMqiRRG1u-2MsSQLbXA"
-const sameple_upload_playlist_id = "UUHnyfMqiRRG1u-2MsSQLbXA"
+// const sample_channel_id = "UCHnyfMqiRRG1u-2MsSQLbXA"
+// const sameple_upload_playlist_id = "UUHnyfMqiRRG1u-2MsSQLbXA"
 
 
 // Initialize YouTube service
@@ -164,7 +164,7 @@ async function getRecentVideos(playlistId, maxResults=5) {
 
 
 
-async function getVideofromChannelId(channelId = sample_channel_id) {
+async function getVideofromChannelId(channelId = "") {
   try {
       const playlistId = await getUploadsPlaylistId(channelId);
       if (!playlistId) {

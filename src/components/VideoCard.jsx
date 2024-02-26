@@ -5,12 +5,12 @@ import { faEye, faThumbsUp, faComment } from '@fortawesome/free-solid-svg-icons'
 function VideoCard({ info }) {
     const { videoId, title, thumbnailUrl, statistics, publishedAt } = info;
 
-    // Function to format numbers with commas
+    // Format numbers with commas
     const formatNumber = (number) => {
         return new Intl.NumberFormat('en-US').format(number);
     };
 
-    // Function to format date
+    // Format date
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
