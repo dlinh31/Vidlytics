@@ -1,6 +1,13 @@
+require('dotenv').config({path: "../../.env"});
 const axios = require('axios');
-const YT_API_KEY = "AIzaSyDWR8umz87buINaMHeRsGXYpEwYZaeFDlg"
+
+const YT_API_KEY = process.env.YOUTUBE_API_KEY
+
+
+
 var {google} = require('googleapis');
+
+
 
 const sample_channel_id = "UCHnyfMqiRRG1u-2MsSQLbXA"
 const sameple_upload_playlist_id = "UUHnyfMqiRRG1u-2MsSQLbXA"
@@ -232,7 +239,7 @@ async function test(videoId) {
 }
 
 
-getVideofromChannelId("UCHnyfMqiRRG1u-2MsSQLbXA").then(res => console.log(res));
+// getVideofromChannelId("UCHnyfMqiRRG1u-2MsSQLbXA").then(res => console.log(res));
 
 
 module.exports = {getChannelInfo, getVideoStats, getVideofromChannelId, getAllVideosFromPlaylist}
