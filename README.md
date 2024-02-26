@@ -40,7 +40,7 @@ To test Vidlytics, follow these steps:
     ```bash
     npm run dev
     ```
-4. Run the application (Back-end):
+4. Run the application on a separate terminal (Back-end):
     ```bash
     cd src
     cd helper
