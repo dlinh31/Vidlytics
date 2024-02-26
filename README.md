@@ -1,4 +1,4 @@
-# Youtube Data Aggregator
+# Vidlytics - Youtube Data Aggregator
 
 ## Description
 The Youtube Data Aggregator is a Web Application built using React.js & Node.js that allows you to generate and aggregate data from multiple Youtube channels. It provides a simple and efficient way to collect information such as video titles, descriptions, view counts, and more. It also allows batch processing of multiple channels.
