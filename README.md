@@ -1,14 +1,23 @@
 # Youtube Data Aggregator
 
 ## Description
-The Youtube Data Aggregator is a tool that allows you to generate and aggregate data from multiple Youtube channels. It provides a simple and efficient way to collect information such as video titles, descriptions, view counts, and more.
+The Youtube Data Aggregator is a tool that allows you to generate and aggregate data from multiple Youtube channels. It provides a simple and efficient way to collect information such as video titles, descriptions, view counts, and more. It also allows batch processing of multiple channels.
 
+## Features
+The Youtube Data Aggregator offers the following features:
+
+- Data collection from multiple Youtube channels
+- Retrieval of video titles, descriptions, view counts, and more
+- Sorting based on different engagement metrics
+- Batch processing for efficient data aggregation
+
+ 
 ## Installation
 To use the Youtube Data Aggregator, follow these steps:
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/your-username/youtube-data-aggregator.git
+    git clone https://github.com/dlinh31/youtube-data-aggregator.git
     ```
 
 2. Install the required dependencies:
@@ -24,10 +33,10 @@ To use the Youtube Data Aggregator, follow these steps:
     - Go to the [Google Cloud Console](https://console.cloud.google.com/).
     - Create a new project or select an existing one.
     - Enable the Youtube Data API v3 for your project.
-    - Create API credentials (OAuth 2.0 client ID) and download the JSON file.
+    - Create API credentials (OAuth 2.0 client ID) and get your personal API Key.
 
 2. Configure the application:
-    - Add an .env file, and specify the following environment variables:
+    - Create an .env file, and specify the following environment variables:
         - `YOUTUBE_API_KEY`: Your personal API Key from Youtube API v3
 
 
@@ -43,8 +52,7 @@ To use the Youtube Data Aggregator, follow these steps:
     ```
 
 
-
-4. Access the application:
+5. Access the application:
     - Open your web browser and navigate to the local host port displayed in the terminal.
     - Use the provided interface to enter the Youtube channel IDs and select the data you want to generate.
 
