@@ -168,12 +168,13 @@ async function getVideofromChannelId(channelId = sample_channel_id) {
 
       // Fetch metrics for each video and add them to the video data
       const videosWithMetrics = await Promise.all(videos.map(async (item) => {
-        const statistics = await getVideoMetrics(item.snippet.resourceId.videoId);
+        const metrics = await getVideoMetrics(item.snippet.resourceId.videoId);
         return {
           title: item.snippet.title,
           videoId: item.snippet.resourceId.videoId,
           thumbnailUrl: item.snippet.thumbnails.high.url,
-          statistics, // Add the statistics here
+          statistics: metrics, // assuming getVideoMetrics now returns an object with statistics and publishedAt
+          publishedAt: metrics.publishedAt // Add the publishedAt date here
         };
       }));
 
@@ -191,7 +192,7 @@ async function getVideoMetrics(videoId) {
   try {
     const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
       params: {
-        part: 'statistics', // The 'statistics' part holds the engagement metrics
+        part: 'statistics, snippet', // The 'statistics' part holds the engagement metrics
         id: videoId, // The video ID for which you want to get the metrics
         key: YT_API_KEY
       }
@@ -199,13 +200,17 @@ async function getVideoMetrics(videoId) {
 
     // If the response contains items, return the statistics
     if (response.data.items && response.data.items.length > 0) {
-      return response.data.items[0].statistics;
+      const videoDetails = response.data.items[0];
+      return {
+        ...videoDetails.statistics, // Spread the statistics
+        publishedAt: videoDetails.snippet.publishedAt // Include the publishedAt date
+      };
     } else {
-      throw new Error('No statistics found for the given video ID.');
+      throw new Error('No details found for the given video ID.');
     }
   } catch (error) {
-    console.error('Error fetching video statistics:', error);
-    throw error; // Re-throw the error to be handled by the caller
+    console.error('Error fetching video details:', error);
+    throw error;
   }
 }
 
@@ -227,7 +232,7 @@ async function test(videoId) {
 }
 
 
-
+getVideofromChannelId("UCHnyfMqiRRG1u-2MsSQLbXA").then(res => console.log(res));
 
 
 module.exports = {getChannelInfo, getVideoStats, getVideofromChannelId, getAllVideosFromPlaylist}

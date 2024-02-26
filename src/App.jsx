@@ -10,7 +10,7 @@ function App() {
   const [handle, setHandle] = useState("");
   const [channelInfo, setChannelInfo] = useState(null);
   const [videos, setVideos] = useState([]);
-  const [sortMethod, setSortMethod] = useState('viewsDesc'); 
+  const [sortMethod, setSortMethod] = useState('dateNewest'); 
  
   
   
@@ -37,20 +37,25 @@ function App() {
   };
 
 
-function sortVideos(videos, method) {
-  return videos.sort((a, b) => {
-    switch (method) {
-      case 'viewsDesc':
-        return parseInt(b.statistics.viewCount) - parseInt(a.statistics.viewCount);
-      case 'likesDesc':
-        return parseInt(b.statistics.likeCount) - parseInt(a.statistics.likeCount);
-      case 'commentsDesc':
-        return parseInt(b.statistics.commentCount) - parseInt(a.statistics.commentCount);
-      default:
-        return 0;
-    }
-  });
-}
+  function sortVideos(videos, method) {
+    return [...videos].sort((a, b) => {
+      switch (method) {
+        case 'viewsDesc':
+          return parseInt(b.statistics.viewCount) - parseInt(a.statistics.viewCount);
+        case 'likesDesc':
+          return parseInt(b.statistics.likeCount) - parseInt(a.statistics.likeCount);
+        case 'commentsDesc':
+          return parseInt(b.statistics.commentCount) - parseInt(a.statistics.commentCount);
+        case 'dateNewest':
+          return new Date(b.publishedAt) - new Date(a.publishedAt); // Sorting by date descending
+        case 'dateOldest':
+          return new Date(a.publishedAt) - new Date(b.publishedAt); // Sorting by date ascending
+        default:
+          return 0;
+      }
+    });
+  }
+  
 
 
 
@@ -123,9 +128,12 @@ const fetchVideos = async (channelId) => {
             onChange={(e) => setSortMethod(e.target.value)}
             className="p-2 border rounded shadow-sm focus:outline-none focus:border-blue-500"
           >
+            <option value="dateNewest">Date (Newest First)</option>
+            <option value="dateOldest">Date (Oldest First)</option>
             <option value="viewsDesc">Views (High to Low)</option>
             <option value="likesDesc">Likes (High to Low)</option>
             <option value="commentsDesc">Comments (High to Low)</option>
+            
           </select>
         </div>
       )}

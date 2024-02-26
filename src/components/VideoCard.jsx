@@ -3,11 +3,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faThumbsUp, faComment } from '@fortawesome/free-solid-svg-icons';
 
 function VideoCard({ info }) {
-    const { videoId, title, thumbnailUrl, statistics } = info;
+    const { videoId, title, thumbnailUrl, statistics, publishedAt } = info;
 
     // Function to format numbers with commas
     const formatNumber = (number) => {
         return new Intl.NumberFormat('en-US').format(number);
+    };
+
+    // Function to format date
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
     };
 
     return (
@@ -19,6 +25,8 @@ function VideoCard({ info }) {
                     <div><FontAwesomeIcon icon={faEye} /> {formatNumber(statistics.viewCount)}</div>
                     <div><FontAwesomeIcon icon={faThumbsUp} /> {formatNumber(statistics.likeCount)}</div>
                     <div><FontAwesomeIcon icon={faComment} /> {formatNumber(statistics.commentCount)}</div>
+                    {/* Display the formatted published date */}
+                    <div>Published: {formatDate(publishedAt)}</div>
                 </div>
             </div>
             <div className="px-6 py-4">
