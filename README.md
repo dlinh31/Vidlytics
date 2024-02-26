@@ -1,10 +1,10 @@
 # Vidlytics - Youtube Data Aggregator
 
 ## Description
-The Youtube Data Aggregator is a Web Application built using React.js & Node.js that allows you to generate and aggregate data from multiple Youtube channels. It provides a simple and efficient way to collect information such as video titles, descriptions, view counts, and more. It also allows batch processing of multiple channels.
+Vidlytics is a web wpplication built using React.js & Node.js that allows you to generate and aggregate data from multiple Youtube channels. It provides a simple and efficient way to collect information such as video titles, descriptions, view counts, and more. It also allows batch processing of multiple channels.
 
 ## Features
-The Youtube Data Aggregator offers the following features:
+Vidlytics offers the following features:
 
 - Data collection from multiple Youtube channels
 - Retrieval of video titles, descriptions, view counts, and more
@@ -13,7 +13,7 @@ The Youtube Data Aggregator offers the following features:
 
  
 ## Installation
-To use the Youtube Data Aggregator, follow these steps:
+To test Vidlytics, follow these steps:
 
 1. Clone the repository:
     ```bash
@@ -27,7 +27,6 @@ To use the Youtube Data Aggregator, follow these steps:
     ```
 
 ## Usage
-To use the Youtube Data Aggregator, follow these steps:
 
 1. Set up your Youtube API credentials:
     - Go to the [Google Cloud Console](https://console.cloud.google.com/).
@@ -57,7 +56,7 @@ To use the Youtube Data Aggregator, follow these steps:
     - Use the provided interface to enter the Youtube channel IDs and select the data you want to generate.
 
 ## Contributing
-Contributions are welcome! If you would like to contribute to the Youtube Data Aggregator, please follow these steps:
+Contributions are welcome! If you would like to contribute to Vidlytics, please follow these steps:
 
 1. Fork the repository.
 2. Create a new branch for your feature or bug fix.
