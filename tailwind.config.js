@@ -5,7 +5,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        robotto: ['Robotto', 'sans-serif'],
+        // Add other font families as needed
+      },
+    },
   },
   plugins: [],
 }

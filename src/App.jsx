@@ -3,6 +3,7 @@ import './App.css';
 import ChannelInfo from './components/ChannelInfo';
 import VideoCard from './components/VideoCard';
 import ChannelCard from './components/ChannelCard';
+import AppHeader from './components/AppHeader';
 
 
 function App() {
@@ -148,6 +149,9 @@ const processBatch = async () => {
 
   return (
     <div className="space-y-4 mx-8">
+
+    <AppHeader /> {/* This will render the header */}
+
       <input
         type="text"
         value={handle}
