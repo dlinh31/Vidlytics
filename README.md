@@ -44,7 +44,7 @@ To test Vidlytics, follow these steps:
     ```bash
     cd src
     cd helper
-    node route.js
+    node server.js
     ```
 
 
