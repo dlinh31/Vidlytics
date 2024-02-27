@@ -31,8 +31,6 @@ function App() {
       const response = await fetch(`${ENDPOINT}/channel/${channelHandle}`);
       if (response.ok) {
         const data = await response.json();
-        // Check if the data contains valid channel information.
-        // Assuming that a valid channel will always have more than 0 subscribers.
         if (data && data.subscriberCount > 0) {
           return { success: true, data };
         } else {
