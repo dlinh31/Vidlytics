@@ -6,6 +6,7 @@ import ChannelCard from './components/ChannelCard';
 import AppHeader from './components/AppHeader';
 
 
+
 function App() {
   const [handle, setHandle] = useState("");
   const [channelInfo, setChannelInfo] = useState(null);
@@ -14,16 +15,20 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [batch, setBatch] = useState([]);
   const [batchResults, setBatchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const sortedVideos = sortVideos([...videos], sortMethod);
     setVideos(sortedVideos);
+    setIsLoading(false);
   }, [sortMethod]); 
 
 
   const fetchChannelInfo = async (channelHandle) => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/channel/${channelHandle}`);
+      const response = await fetch(`https://vidlytics.onrender.com/api/channel/${channelHandle}`);
+      
       if (response.ok) {
         const data = await response.json();
         // Check if the data contains valid channel information.
@@ -111,6 +116,7 @@ const processBatch = async () => {
     }
   }
   setBatchResults(results);
+  setIsLoading(false);
   // Clear the batch if you want to start fresh next time
   setBatch([]);
 };
@@ -125,6 +131,7 @@ const processBatch = async () => {
         setErrorMessage(""); // Clear any existing error message
         const videosFromSearch = await fetchVideos(data.id);
         setVideos(videosFromSearch); // Set the fetched videos here
+        setIsLoading(false)
       } else {
         setErrorMessage("Channel with given username doesn't exist"); // Set the error message
         setChannelInfo(null); // Ensure to clear any existing channel info
@@ -134,7 +141,7 @@ const processBatch = async () => {
   };
   
 
-  // Input field event handler
+  // Input field event ler
   const handleInputChange = (event) => {
     setHandle(event.target.value);
   };
@@ -168,6 +175,9 @@ const processBatch = async () => {
       </button>
     </div>
   </div>
+  {isLoading && <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+    </div>}
       {/* Display all Youtube channels username */}
       <div>
         {batch.map((username, index) => (
