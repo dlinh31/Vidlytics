@@ -221,10 +221,6 @@ const processBatch = async () => {
         ))}
       </div>
 
-      {isLoading && <div className="flex justify-center items-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-    </div>}
-
       {/* Videos from batch processing  */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {batchResults.map((result, index) => (
