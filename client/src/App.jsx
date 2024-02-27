@@ -14,16 +14,20 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [batch, setBatch] = useState([]);
   const [batchResults, setBatchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const ENDPOINT = "https://vidlytics.onrender.com/api"
 
   useEffect(() => {
     const sortedVideos = sortVideos([...videos], sortMethod);
+    
     setVideos(sortedVideos);
   }, [sortMethod]); 
 
 
   const fetchChannelInfo = async (channelHandle) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/channel/${channelHandle}`);
+      setIsLoading(true);
+      const response = await fetch(`${ENDPOINT}/channel/${channelHandle}`);
       if (response.ok) {
         const data = await response.json();
         // Check if the data contains valid channel information.
@@ -68,7 +72,7 @@ function App() {
 
   const fetchVideos = async (channelId) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/playlist/${channelId}`);
+      const response = await fetch(`${ENDPOINT}/playlist/${channelId}`);
       if (!response.ok) throw new Error('Video data could not be fetched');
       const data = await response.json();
       return sortVideos(data, 'dateNewest');
@@ -111,6 +115,7 @@ const processBatch = async () => {
     }
   }
   setBatchResults(results);
+  setIsLoading(false);
   // Clear the batch if you want to start fresh next time
   setBatch([]);
 };
@@ -125,6 +130,7 @@ const processBatch = async () => {
         setErrorMessage(""); // Clear any existing error message
         const videosFromSearch = await fetchVideos(data.id);
         setVideos(videosFromSearch); // Set the fetched videos here
+        setIsLoading(false);
       } else {
         setErrorMessage("Channel with given username doesn't exist"); // Set the error message
         setChannelInfo(null); // Ensure to clear any existing channel info
@@ -201,6 +207,10 @@ const processBatch = async () => {
         </div>
       )}
     </div>
+
+    {isLoading && <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+    </div>}
       
       <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {videos.length > 0 && videos.map(video => (
