@@ -4,7 +4,6 @@ const axios = require('axios');
 const YT_API_KEY = process.env.YOUTUBE_API_KEY
 var {google} = require('googleapis');
 
-console.log(YT_API_KEY)
 // const sample_channel_id = "UCHnyfMqiRRG1u-2MsSQLbXA"
 // const sameple_upload_playlist_id = "UUHnyfMqiRRG1u-2MsSQLbXA"
 
@@ -83,6 +82,7 @@ async function getAllVideosFromPlaylist(playlistId, nextPageToken = '', videos =
       });
 
       videos.push(...response.data.items);
+      console.log(response)
 
 
       return videos;
@@ -95,68 +95,65 @@ async function getAllVideosFromPlaylist(playlistId, nextPageToken = '', videos =
 
 
 
+// async function getPlaylists(channelId) {
+//   const payload = {
+//       part: 'snippet,contentDetails',
+//       channelId: channelId,
+//       maxResults: 50,
+//   };
+//   try {
+//       const response = await youtube.playlists.list(payload);
+//       return response.data.items; // Return the playlists
+//   } catch (error) {
+//       console.error('Error fetching playlists:', error);
+//       return null;
+//   }
+// }
+
+
+// async function getIDfromHandle(handle){
+//     payload = {
+//         forHandle: handle,
+//         part: 'snippet,contentDetails,statistics',
+//     }
+//     try {
+//         const response = await youtube.channels.list(payload);
+//         const result = response.data.items[0].id;
+
+
+//         return result
+
+//     } catch (error) {
+//         console.error('Error fetching channel id:', error);
+//         return null;
+//     }
+// }
 
 
 
-async function getPlaylists(channelId) {
-  const payload = {
-      part: 'snippet,contentDetails',
-      channelId: channelId,
-      maxResults: 50,
-  };
-  try {
-      const response = await youtube.playlists.list(payload);
-      return response.data.items; // Return the playlists
-  } catch (error) {
-      console.error('Error fetching playlists:', error);
-      return null;
-  }
-}
+// async function getRecentVideos(playlistId, maxResults=5) {
+//   try {
+//     const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+//       params: {
+//         part: 'snippet',
+//         playlistId: playlistId,
+//         maxResults: maxResults,
+//         key: YT_API_KEY,
+//       },
+//     });
 
+//     const videos = response.data.items.map(item => ({
+//       title: item.snippet.title,
+//       videoId: item.snippet.resourceId.videoId,
+//       publishedAt: item.snippet.publishedAt,
+//     }));
 
-async function getIDfromHandle(handle){
-    payload = {
-        forHandle: handle,
-        part: 'snippet,contentDetails,statistics',
-    }
-    try {
-        const response = await youtube.channels.list(payload);
-        const result = response.data.items[0].id;
-
-
-        return result
-
-    } catch (error) {
-        console.error('Error fetching channel id:', error);
-        return null;
-    }
-}
-
-
-
-async function getRecentVideos(playlistId, maxResults=5) {
-  try {
-    const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
-      params: {
-        part: 'snippet',
-        playlistId: playlistId,
-        maxResults: maxResults,
-        key: YT_API_KEY,
-      },
-    });
-
-    const videos = response.data.items.map(item => ({
-      title: item.snippet.title,
-      videoId: item.snippet.resourceId.videoId,
-      publishedAt: item.snippet.publishedAt,
-    }));
-
-    return videos;
-  } catch (error) {
-    console.error('Error fetching recent videos:', error);
-    return [];
-  }
-}
+//     return videos;
+//   } catch (error) {
+//     console.error('Error fetching recent videos:', error);
+//     return [];
+//   }
+// }
 
 
 
@@ -216,26 +213,6 @@ async function getVideoMetrics(videoId) {
     throw error;
   }
 }
-
-
-async function test(videoId) {
-  try {
-    const response = await axios.get('https://www.googleapis.com/youtube/v3/videos', {
-      params: {
-        part: 'snippet', // The 'statistics' part holds the engagement metrics
-        id: videoId, // The video ID for which you want to get the metrics
-        key: YT_API_KEY
-      }
-    });
-    return response.data.items[0];
-  } catch (error) {
-    console.error('Error fetching video statistics:', error);
-    throw error; // Re-throw the error to be handled by the caller
-  }
-}
-
-
-// getVideofromChannelId("UCHnyfMqiRRG1u-2MsSQLbXA").then(res => console.log(res));
 
 
 module.exports = {getChannelInfo, getVideoStats, getVideofromChannelId, getAllVideosFromPlaylist}
