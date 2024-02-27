@@ -4,6 +4,11 @@ const axios = require('axios');
 const YT_API_KEY = process.env.YOUTUBE_API_KEY
 var {google} = require('googleapis');
 
+console.log(YT_API_KEY)
+// const sample_channel_id = "UCHnyfMqiRRG1u-2MsSQLbXA"
+// const sameple_upload_playlist_id = "UUHnyfMqiRRG1u-2MsSQLbXA"
+
+
 // Initialize YouTube service
 const youtube = google.youtube({
     version: 'v3',
