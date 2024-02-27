@@ -14,6 +14,8 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [batch, setBatch] = useState([]);
   const [batchResults, setBatchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
+
 
   useEffect(() => {
     const sortedVideos = sortVideos([...videos], sortMethod);
@@ -22,8 +24,10 @@ function App() {
 
 
   const fetchChannelInfo = async (channelHandle) => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/channel/${channelHandle}`);
+      // const response = await fetch(`http://localhost:3001/api/channel/${channelHandle}`);
+      const response = await fetch(`https://vidlytics.onrender.com/api/channel/${channelHandle}`);
       if (response.ok) {
         const data = await response.json();
         // Check if the data contains valid channel information.
@@ -111,6 +115,7 @@ const processBatch = async () => {
     }
   }
   setBatchResults(results);
+  setIsLoading(false);
   // Clear the batch if you want to start fresh next time
   setBatch([]);
 };
@@ -125,6 +130,7 @@ const processBatch = async () => {
         setErrorMessage(""); // Clear any existing error message
         const videosFromSearch = await fetchVideos(data.id);
         setVideos(videosFromSearch); // Set the fetched videos here
+        setIsLoading(false);
       } else {
         setErrorMessage("Channel with given username doesn't exist"); // Set the error message
         setChannelInfo(null); // Ensure to clear any existing channel info
@@ -207,6 +213,10 @@ const processBatch = async () => {
           <VideoCard key={video.id} info={video} />
         ))}
       </div>
+
+      {isLoading && <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+    </div>}
 
       {/* Videos from batch processing  */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
