@@ -2,6 +2,7 @@
 
 ## Web App
 You can access the Vidlytics web app at [https://vidlytics.netlify.app/](https://vidlytics.netlify.app/).
+The first load will take a bit more time due to limitation of back-end deployment through Render. 
 
 ## Description
 **Vidlytics** is a web application leveraging React.js, Node.js and Youtube Data API to aggregate YouTube channel data. It streamlines the collection of video details, view counts, and other metrics, supporting batch processing for multiple channels simultaneously.
