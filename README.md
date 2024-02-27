@@ -13,42 +13,40 @@ You can access the Vidlytics web app at [https://vidlytics.netlify.app/](https:/
 - **Batch Processing**: Enables efficient data collection for multiple channels.
 
 
-## Installation
+## Usage (Locally)
 1. Clone the repo:
     ```bash
     git clone https://github.com/dlinh31/youtube-data-aggregator.git
     ```
 
-2. Install dependencies:
-     ```bash
-     cd youtube-data-aggregator && npm install
-     ```
 
-## Usage
-
-1. Set up your Youtube API credentials:
+2. Set up your Youtube API credentials:
      - Go to the [Google Cloud Console](https://console.cloud.google.com/).
      - Create a new project or select an existing one.
      - Enable the Youtube Data API v3 for your project.
      - Create API credentials (OAuth 2.0 client ID) and get your personal API Key.
 
-2. Configure the application:
+3. Configure the application:
      - Create an .env file, and specify the following environment variables:
           - `YOUTUBE_API_KEY`: Your personal API Key from Youtube API v3
 
-3. Run the application (Front-end):
+
+
+4. Run the application (Front-end):
      ```bash
+     cd client
+     npm install
      npm run dev
      ```
 
-4. Run the application on a separate terminal (Back-end):
+5. Run the application on a separate terminal (Back-end):
      ```bash
-     cd src
-     cd helper
+     cd server
+     npm install
      node server.js
      ```
 
-5. Access the application:
+6. Access the application:
      - Open your web browser and navigate to the local host port displayed in the terminal.
      - Use the provided interface to enter the Youtube channel IDs and select the data you want to generate.
 
@@ -95,6 +93,8 @@ API Endpoint: <code>https://vidlytics.onrender.com/api/</code>
 > | `400`         | `application/json`                | `{"error": "No videos is found for the specified channel"}`         |
 
 </details>
+
+------------------------------------------------------------------------------------------
 
 
 ## Contributing
