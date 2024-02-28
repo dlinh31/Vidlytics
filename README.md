@@ -1,7 +1,7 @@
 # Vidlytics: YouTube Data Aggregator
 
 ## Web App
-You can access the Vidlytics web app at [https://vidlytics.netlify.app/](https://vidlytics.netlify.app/).
+You can access the Vidlytics web app at [https://vidlytics.netlify.app/](https://vidlytics.netlify.app/). The first load would take a longer time due to limiatition of hosting server through render.
 
 
 ## Description
